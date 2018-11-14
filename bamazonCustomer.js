@@ -22,7 +22,7 @@ var start = function(){
     connection.query("SELECT * FROM products", function(err, res){
         if(err) throw(err);
         for(var i = 0; i < res.length; i++)
-        console.log("-------"+"\nProduct: "+res[i].product_name+"\nID: "+res[i].item_id+"\nPrice: "+res[i].price);
+        console.log("-------"+"\nProduct: "+res[i].product_name+"\nID: "+res[i].item_id+"\nPrice: "+res[i].price+"\nStock: "+res[i].stock_quantity);
         
         idOfProduct();
     })
@@ -62,9 +62,23 @@ var idOfProduct = function(){
                 console.log("--------------");
                 console.log("In stock. Order has been placed.")
                 console.log("--------------");
+                var query = "UPDATE products SET stock_quantity = "+ (res[0].stock_quantity - answer.amount) +" WHERE item_id ="+ answer.id;
+                var query = "SELECT stock_quantity FROM products WHERE ?";
+                //need to update quantity
+
+                connection.query(query, {item_id:answer.id}, function(err, res){
+                    
+                    console.log("--------------");
+                    console.log("New quantity: " + res[0].stock_quantity);
+
+                    var query = "SELECT price FROM products WHERE ?";
+                     connection.query(query, {item_id:answer.id}, function(err, res){
+                    console.log("Total Cost: $" + (res[0].price * answer.amount));
                 idOfProduct();
-            }
+            })
         })
+        }
+    })
         
         })
        
